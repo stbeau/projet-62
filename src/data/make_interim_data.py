@@ -7,21 +7,24 @@ Created on Fri Sep 18 18:17:25 2020
 
 import os
 import string
+import gzip
+import shutil
 import janitor
 import pandas as pd
 
 
 RAW_PATH = "../../data/raw"
 INTERIM_PATH = "../../data/interim"
-FILENAME = "valeursfoncieres-2019.txt"
+FILENAME = "dvf_2019.gz"
 
 INPUT_FULLNAME = os.path.join(RAW_PATH,FILENAME)
 OUTPUT_FULLNAME = os.path.join(INTERIM_PATH,".".join([os.path.splitext(FILENAME)[0],"csv"]))
 
-def duplicate_raw_data_to_default_csv(input_fullname=INPUT_FULLNAME, output_fullname=OUTPUT_FULLNAME):
-    
-    raw_data = pd.read_csv(input_fullname, delimiter="|", encoding='utf-8', infer_datetime_format=True, decimal=",", low_memory=False)
-    raw_data.clean_names(remove_special=True).to_csv(output_fullname, index=False)
+
+def expand_raw_data_to_default_csv(input_fullname=INPUT_FULLNAME, output_fullname=OUTPUT_FULLNAME):
+    with gzip.open(input_fullname, 'rb') as f_in:
+        with open(output_fullname, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
     return
 
 
@@ -30,13 +33,12 @@ def split_data_on_type_local(input_fullname, output_filepath):
     input_filename = os.path.splitext(os.path.basename(input_fullname))[0]
     
     raw_data = pd.read_csv(input_fullname, low_memory=False)
-    types_locaux = raw_data["type_local"].unique()
+    types_locaux = list(raw_data["type_local"].dropna().unique())
     
     for type_local in types_locaux:
-        output_filename = "".join([input_filename,"-",format_filename(type_local),".csv"])
+        output_filename = "".join([input_filename,"-", format_filename(type_local),".csv"])
         output_fullname = os.path.join(output_filepath, output_filename)
-        #raw_data[raw_data["type_local"]]==type_local].drop(columns="type_local").to_csv(output_fullname)
-        print(type_local)
+        raw_data[raw_data["type_local"]==type_local].drop(columns="type_local").to_csv(output_fullname)
     return
 
     #os.path.dirname
@@ -58,6 +60,6 @@ def format_filename(s):
 
 if __name__ == '__main__':
     
-   # duplicate_raw_data_to_default_csv(input_fullname=INPUT_FULLNAME, output_fullname=OUTPUT_FULLNAME)
+   expand_raw_data_to_default_csv(input_fullname=INPUT_FULLNAME, output_fullname=OUTPUT_FULLNAME)
    split_data_on_type_local(input_fullname=OUTPUT_FULLNAME, output_filepath=INTERIM_PATH)
     
