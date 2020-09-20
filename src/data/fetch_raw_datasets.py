@@ -12,18 +12,24 @@ Created on Fri Sep 18 16:02:59 2020
 import os
 import requests
 
-URL_STABLE = "https://www.data.gouv.fr/fr/datasets/r/1be77ca5-dc1b-4e50-af2b-0240147e0346"
-DOWNLOAD_ROOT = "https://static.data.gouv.fr/resources/demandes-de-valeurs-foncieres/20200416-115822/valeursfoncieres-2019.txt"
-FILENAME = "valeursfoncieres-2019.txt" #os.path.join("datasets", "housing")
+def change_filename_in_filelink(filelink, new_filename):
+    dirname = os.path.dirname(filelink)
+    file_ext = os.path.splitext(os.path.basename(filelink))[1]
+    return "".join([dirname,new_filename,file_ext])
 
-SOURCE_URL = os.path.join(DOWNLOAD_ROOT,FILENAME)
+
+DOWNLOAD_PATH = "https://cadastre.data.gouv.fr/data/etalab-dvf/latest/csv/2019/"
+INPUT_FILENAME = "full.csv.gz"
 OUTPUT_PATH = "../../data/raw"
-OUTPUT_FILENAME = os.path.join(OUTPUT_PATH,FILENAME)
+OUTPUT_FILENAME = "dvf_2019.gz"
+
+SOURCE_URL = os.path.join(DOWNLOAD_PATH,INPUT_FILENAME)
+OUTPUT_FULLNAME = os.path.join(OUTPUT_PATH, OUTPUT_FILENAME)
 
 
-def fetch_raw_datasets(input_filelink=SOURCE_URL, output_filepath=OUTPUT_PATH, filename=FILENAME):
+def fetch_raw_datasets(input_filelink=SOURCE_URL, output_fullname=OUTPUT_FULLNAME):
 
-    output_filename = os.path.join(output_filepath,filename)
+    output_filepath = os.path.dirname(output_fullname)
 
     if not os.path.isdir(output_filepath):
         os.makedirs(output_filepath)
@@ -33,8 +39,8 @@ def fetch_raw_datasets(input_filelink=SOURCE_URL, output_filepath=OUTPUT_PATH, f
     
     try :
         print(f"Input filelink : {input_filelink}")
-        print(f"Output filename : {output_filename}")
-        with open(output_filename, 'wb') as local_file:
+        print(f"Output fullname : {output_fullname}")
+        with open(output_fullname, 'wb') as local_file:
             for data in file_stream:
                 local_file.write(data)
             print("Terminé !")
@@ -47,9 +53,7 @@ def fetch_raw_datasets(input_filelink=SOURCE_URL, output_filepath=OUTPUT_PATH, f
 
 if __name__ == '__main__':
     
-    url_path = ""
-    file_name = ""
-    fetch_raw_datasets(input_filelink=URL_STABLE, output_filepath=OUTPUT_PATH, filename=FILENAME)
+    fetch_raw_datasets(input_filelink=SOURCE_URL, output_fullname=OUTPUT_FULLNAME)
 
 
 
