@@ -9,7 +9,7 @@ import os
 import string
 import gzip
 import shutil
-import janitor
+#import janitor
 import pandas as pd
 
 
@@ -38,7 +38,7 @@ def split_data_on_type_local(input_fullname, output_filepath):
     for type_local in types_locaux:
         output_filename = "".join([input_filename,"-", format_filename(type_local),".csv"])
         output_fullname = os.path.join(output_filepath, output_filename)
-        raw_data[raw_data["type_local"]==type_local].drop(columns="type_local").to_csv(output_fullname)
+        raw_data[raw_data["type_local"]==type_local].drop(columns="type_local").to_csv(output_fullname, index=False)
     return
 
     #os.path.dirname
@@ -46,7 +46,7 @@ def split_data_on_type_local(input_fullname, output_filepath):
 
 
 def make_interim_data():
-    #raw_data.clean_names(remove_special=True).
+
     return
 
 def format_filename(s):
@@ -60,6 +60,6 @@ def format_filename(s):
 
 if __name__ == '__main__':
     
-   expand_raw_data_to_default_csv(input_fullname=INPUT_FULLNAME, output_fullname=OUTPUT_FULLNAME)
-   split_data_on_type_local(input_fullname=OUTPUT_FULLNAME, output_filepath=INTERIM_PATH)
+    #expand_raw_data_to_default_csv(input_fullname=INPUT_FULLNAME, output_fullname=OUTPUT_FULLNAME)
+    split_data_on_type_local(input_fullname=OUTPUT_FULLNAME, output_filepath=INTERIM_PATH)
     
