@@ -87,3 +87,4 @@ target/
 
 # Mypy cache
 .mypy_cache/
+/full 2.csv
