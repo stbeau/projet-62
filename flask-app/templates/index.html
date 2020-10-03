@@ -1,0 +1,21 @@
+{% extends "basic.html" %}
+
+{% block content %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Welcome to House Prediction G4</h1>
+            <p class="lead">In this site you can predixt the price of your home.</p>
+            <h2>In order to get the estimations, please sign up</h2>
+            <a href="{{ url_for('signup_form') }}">Sign Up</a>
+        </div>
+
+        <div>
+            <form action="{{ url_for('report') }}">
+                <label for="username">Username:</label>
+                <input type="text" name="username">
+                <input type="submit" name="Submit Form">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+    
