@@ -1,6 +1,0 @@
-[core]
-    remote = projet62remote
-['remote "projet_a62_remote"']
-    url = gdrive://1_v-2De1JnJVXgMxx_4iHzEUBQmL2ZUaN
-['remote "projet62remote"']
-    url = gdrive://1bWNuz6a3M9Kn2rF5XVhu5GC3EY2g8Cg5
