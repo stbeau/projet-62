@@ -114,7 +114,7 @@ data_in.info()
 # =============================================================================
 #%% md 
 ### Data Summary
-
+#Summary of the Row Data Set 
 
 #%%
 from quickda.explore_data import *
@@ -132,7 +132,6 @@ summary  # Display Raw Data Summary
 
 #summary
 
-# ========================================
 #%% md 
 ### Assign Features on Categories
 
@@ -186,7 +185,7 @@ summary  # Display Raw Data Summary
 
 
 #%% md 
-#### Setting Unuseful featues for analysis   Using above summary results
+### Setting Unuseful featues for analysis   Using above summary results
 
 
 
@@ -305,8 +304,25 @@ id_ftrs = ['id_parcelle'
            #, 'id_mutation', 'date_mutation', 'numero_disposition', 'nature_mutation'
            , 'valeur_fonciere'
            ]
-data = data_in2.drop_duplicates(subset=id_ftrs, keep='last')
+data_unique = data_in2.drop_duplicates(subset=id_ftrs, keep='last')
+
 print(data.shape)
+
+
+#%% 
+
+# Select only Sell operations
+
+data = data_unique.loc[data_unique.nature_mutation == 'Vente',:]
+data.shape
+
+#%% 
+# Update usable ftrs categories Nature mutation will be a not usable ftrs
+cat_ftrs.remove('nature_mutation')
+ftrs.remove('nature_mutation')
+unuseful_ftrs.append('nature_mutation')
+
+
 
 
 #%%md 
@@ -329,14 +345,10 @@ plt.show()
 
 
 
-#%%md 
-### Applying log transformations gives a very centered distribution
-###### There is, however a small separated group of very low valuew which can, maybe be inspected to see if they are outliers.
+#%% md
+#Applying log transformations gives a very centered distribution, There is, however a small separated group of very low valuew  which can, maybe be inspected to see if they are outliers.
 
-#%%
-# Measure proportiob of extreme (by eyesight they are over 2 million value 20)
-extreme_vals_ptj = data.loc[data.valeur_fonc_mil>1500].shape[0] / data.shape[0] *100
-print("Fount extreme values ptj: {:.2f}%".format(extreme_vals_ptj)  )
+
 
 
 #%%
@@ -384,7 +396,7 @@ data.loc[data.valeur_fonciere_log<1, :].sort_values(by=['id_parcelle', 'valeur_f
 ### Exploratoty Analysis
 
 
-#%%md 
+#%% md 
 ###  Categorical features vs Target
 
 #%%
@@ -397,11 +409,9 @@ cat_ftrs_nunique_low = summary.loc[  summary.index.isin(cat_ftrs) & (summary['nu
 
 
 
-# =============================================================================
 #%% md 
 ### Plot each categorical value vs Target
-# We see that for nature_mutation and culture_nature categories seem to influence target
-# while type_local ones don't seem to have an impact. 
+# We see that for nature_mutation and culture_nature categories seem to influence target while type_local ones don't seem to have an impact. 
 
 
 #%%
@@ -429,12 +439,10 @@ for f in cat_ftrs_nunique_low:
 #%% #### md 
 ### Inspect Numeric Features
     
-###### By inspecting continuous features against the target we found next discoveries:
-###### 1. Nombre de lots, surface reel batie et nombre de pieces principales semblent avoir
-###### une influence dans la valeur fonciere. 2. Longitude et Latitude aussi semblen avoir une influence
-###### cépendant il existe un  petit cluster separé des autres dans lon[5,15] et lat [-60, -50]. Possibly delete these
-###### and not make predictions for outside Euope Continent France Territories
-###### Other numeric features dont seem to have an important contribution on value
+#By inspecting continuous features against the target we found next discoveries:
+#1. Nombre de lots, surface reel batie et nombre de pieces principales semblent avoir
+#2. Longitude et Latitude aussi semblen avoir une influence cépendant il existe un  petit cluster separé des autres dans lon[5,15] et lat [-60, -50]. Possibly delete these and not make predictions for outside Euope Continent France Territories
+#Other numeric features dont seem to have an important contribution on value
 
 #%%
 
@@ -453,7 +461,7 @@ fig, ax = plt.subplots(figsize=(12,8))
 sns.heatmap(corr, annot=True, cmap="Greens")
 plt.show()
 
-# =============================================================================
+
 #%% md 
 ### Predictive Capacity of Features
 # Finally we inspect the predictive capacity of the features
@@ -462,23 +470,40 @@ plt.show()
 #%%
 pred_mtx = eda_numcat(data, x=None, y=None, method="pps")
 #%%
-#pred_mtx
+#pred_mtx #This is only displayed in the notebook not in script execution
 
 #%% md 
 #### Export Summary of features to use
 
 
+#%%
+
+
+#%%
 # Make sunmary of all original colunns and left rows
+
+
 summary_out = explore(data_in.loc[data.index,:], method="summarize")
+
 summary_out
 
 #%%
-summary_out.loc[ftrs, smmry4]
-summary.loc[unuseful_ftrs, smmry4]
+# Add column with Boolean of usable or not ftr
+
 summary['use_ftr'] = [True if f in ftrs else False for f in summary.index]
 summary.loc[ftrs,smmry4]
-#summary['use_ftr']
-summary.to_csv('../../data/interim/features_to_use_summary.csv')
+
+summary['use_ftr']
 
 #%%
+summary.to_csv('../../data/interim/features_to_use_summary.csv', index = False) # Out summary to be used on modelassertion to know which ftrs to use
+
+#%% md
+### Export Filtered Row Data Set
+
+#%% 
+data.tail(1).T
+summary.to_csv('../../data/interim/raw_useful_ftrs.csv', index = False) 
+
+
 
