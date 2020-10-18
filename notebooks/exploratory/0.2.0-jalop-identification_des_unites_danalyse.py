@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-#%% md 
-## Exploratory Data Analysis
+#%% md  #
+# Exploratory Data Analysis
 
-## Prix de Vente des Proprietées
+# Prix de Vente des Proprietées
 
 
 #%%
@@ -19,6 +19,9 @@ pd.options.display.max_columns = 999
 
 import seaborn as sns
 import quickda
+
+#import warnings
+#warnings.filterwarnings('ignore')
 
 #%%
 # Set Fix Parame
@@ -75,7 +78,7 @@ for f in filenames:
 
 
 
-#%%md 
+#%% md 
 #### Merge the Data Sets 
 
 
@@ -110,8 +113,8 @@ data_in.info()
 
 # =============================================================================
 #%% md 
-###Data Summary
-# Summary of the Row Data Set 
+### Data Summary
+
 
 #%%
 from quickda.explore_data import *
@@ -131,7 +134,7 @@ summary  # Display Raw Data Summary
 
 # ========================================
 #%% md 
-#### Assign Features on Categories
+### Assign Features on Categories
 
 
 #%%
@@ -226,8 +229,8 @@ summary.loc[ftrs, smmry4]
 
 
 
-# =============================================================================
-#%%md 
+
+#%% md 
 ### Set useful Feature Groups
 
 
@@ -268,16 +271,15 @@ for dt in [date_ftrs, num_ftrs, cat_ftrs]:
 
 data_in2.tail(1).T
 
-# =============================================================================
-#% md 
-'''
-Check Duplicates
-'''
+
+#%% md 
+##### Check Duplicates
 
 
 
-#%% md It seems like duplicates are sales with id_parcelle
-# and valeur_fonciere when they are same more than once 
+#%% md #
+#It seems like duplicates are sales with id_parcelle
+#and valeur_fonciere when they are same more than once 
 
 
 #%%
@@ -307,16 +309,17 @@ data = data_in2.drop_duplicates(subset=id_ftrs, keep='last')
 print(data.shape)
 
 
-# =============================================================================
-#%%md #### Explore Target Feature
-# First Plotting target_value in thousands to facilitate visualization
+#%%md 
+### Explore Target Feature
+###### First Plotting target_value in thousands to facilitate visualization
 
 
-#%%md Original target values are very left skewed
+#%%md 
+###### Original target values are very left skewed
 
 #%%
-# Add sale value in thousands for easiest management
-# Now plot log of target value
+###### Add sale value in thousands for easiest management
+###### Now plot log of target value
 df_plot = data.sample(10000, random_state=SEED)
 
 fig, ax = plt.subplots(figsize=(12,8))
@@ -326,8 +329,9 @@ plt.show()
 
 
 
-#%%md Applying log transformations gives a very centered distribution
-# There is, however a small separated group of very low valuew which can, maybe be inspected to see if they are outliers.
+#%%md 
+### Applying log transformations gives a very centered distribution
+###### There is, however a small separated group of very low valuew which can, maybe be inspected to see if they are outliers.
 
 #%%
 # Measure proportiob of extreme (by eyesight they are over 2 million value 20)
@@ -375,12 +379,13 @@ atypic_low.shape
 data.loc[data.valeur_fonciere_log<1, :].sort_values(by=['id_parcelle', 'valeur_fonciere']).head(100).nature_culture.value_counts()
 
 
-# =============================================================================
-#%% md ### Exploratoty Analysis
+
+#%% md 
+### Exploratoty Analysis
 
 
-# =============================================================================
-#%%md ####  Categorical features vs Target
+#%%md 
+###  Categorical features vs Target
 
 #%%
 
@@ -393,7 +398,8 @@ cat_ftrs_nunique_low = summary.loc[  summary.index.isin(cat_ftrs) & (summary['nu
 
 
 # =============================================================================
-#%% md Plot each categorical value vs Target
+#%% md 
+### Plot each categorical value vs Target
 # We see that for nature_mutation and culture_nature categories seem to influence target
 # while type_local ones don't seem to have an impact. 
 
@@ -420,14 +426,15 @@ for f in cat_ftrs_nunique_low:
 
 
 
-#%% #### md Inspect Numeric Features
+#%% #### md 
+### Inspect Numeric Features
     
-# By inspecting continuous features against the target we found next discoveries:
-# 1. Nombre de lots, surface reel batie et nombre de pieces principales semblent avoir
-# une influence dans la valeur fonciere. 2. Longitude et Latitude aussi semblen avoir une influence
-# cépendant il existe un  petit cluster separé des autres dans lon[5,15] et lat [-60, -50]. Possibly delete these
-# and not make predictions for outside Euope Continent France Territories
-# Other numeric features dont seem to have an important contribution on value
+###### By inspecting continuous features against the target we found next discoveries:
+###### 1. Nombre de lots, surface reel batie et nombre de pieces principales semblent avoir
+###### une influence dans la valeur fonciere. 2. Longitude et Latitude aussi semblen avoir une influence
+###### cépendant il existe un  petit cluster separé des autres dans lon[5,15] et lat [-60, -50]. Possibly delete these
+###### and not make predictions for outside Euope Continent France Territories
+###### Other numeric features dont seem to have an important contribution on value
 
 #%%
 
@@ -447,7 +454,8 @@ sns.heatmap(corr, annot=True, cmap="Greens")
 plt.show()
 
 # =============================================================================
-#%% md Predictive Capacity of Features
+#%% md 
+### Predictive Capacity of Features
 # Finally we inspect the predictive capacity of the features
 
     
@@ -456,7 +464,8 @@ pred_mtx = eda_numcat(data, x=None, y=None, method="pps")
 #%%
 #pred_mtx
 
-#%% md ### Export Summary of features to use
+#%% md 
+#### Export Summary of features to use
 
 
 # Make sunmary of all original colunns and left rows
