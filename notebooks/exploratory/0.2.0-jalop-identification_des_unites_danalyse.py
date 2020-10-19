@@ -494,16 +494,28 @@ summary['use_ftr'] = [True if f in ftrs else False for f in summary.index]
 summary.loc[ftrs,smmry4]
 
 summary['use_ftr']
+summary
 
 #%%
-summary.to_csv('../../data/interim/features_to_use_summary.csv', index = False) # Out summary to be used on modelassertion to know which ftrs to use
 
+summary.to_csv('../../data/interim/features_to_use_summary.csv', index = True) # Out summary to be used on modelassertion to know which ftrs to use
+summary.shape
 #%% md
 ### Export Filtered Row Data Set
 
+#%% md
+#Recode Code Postale
+
+#%% 
+
+data['code_postal'] = data.loc[:,'code_postal'].astype('object')
+data.info()
+
 #%% 
 data.tail(1).T
-summary.to_csv('../../data/interim/raw_useful_ftrs.csv', index = False) 
-
+print(data.shape)
+data_out = data.loc[:,ftrs + [target]].dropna(subset=[target])
+data_out.to_csv('../../data/interim/raw_useful_ftrs.csv', index = False) 
+data_out.shape
 
 
