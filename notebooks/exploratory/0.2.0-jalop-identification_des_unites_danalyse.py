@@ -38,6 +38,7 @@ SEED = 1234 # Seed for random  number geneartors
 #ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
 data_folder = '../../data/raw/'
 
+dsets = {} 
 
 filenames = [  
                #'dvf_2018.gz',
@@ -46,7 +47,7 @@ filenames = [
 
 #%% 
  # Util Fn to read write out a data sample from origina raw data files
- def pd_read_save(filename, sample_size, output_path):
+def pd_read_save(filename, sample_size, output_path):
  #    n = sum(1 for line in open(filename, errors = "ignore")) - 1 #number of records in file (excludes header)
  #    print("total rows")
  #    s = sample_size #desired sample sizfre
@@ -58,24 +59,26 @@ filenames = [
      return df
 
 
- for f in filenames:
-     data = data_folder + f
-     print(data_folder  +'samples/'+f.split('.')[0]  +'_sample.csv.gz')
-     pd_read_save( data, sample_size=400000, output_path = data_folder  +'samples/'+f.split('.')[0]  +'_sample.csv.gz')
-
 
 #%%
 # Read saved data samples
-    
-dsets = {} #f.split('.')[0]: pd.DataFrame() for f in filenames
+use_samples = False
 
 for f in filenames:
     base_name = f.split('.')[0]
-    dsets[base_name] = pd.read_csv(  data_folder  + 'samples/' + base_name + '_sample.csv.gz'
+    if not use_samples:
+        data_path = data_folder + f
+        print(data_folder  +'samples/'+f.split('.')[0]  +'_sample.csv.gz')
+        dsets[base_name] = pd_read_save( data_path, sample_size=400000
+                          , output_path = data_folder  +'samples/'+f.split('.')[0]  +'_sample.csv.gz')
+    else:
+        dsets[base_name] = pd.read_csv(  data_folder  + 'samples/' + base_name + '_sample.csv.gz'
                                    , error_bad_lines = False, sep = ';'
                                    )
-    print(base_name, dsets[base_name].shape)
+        
 
+
+dsets.keys()
 
 
 #%% md 
@@ -205,7 +208,8 @@ ftrs_high_null_ptc = [f for f in summary.loc[summary.null_pct > 0.40,:].index  i
 #summary.loc[ftrs_high_null_ptc, 'null_pct']
 
 useful_code_ftrs =  [
-                     'code_postal'
+                      'code_commune'
+                    , 'code_postal'
                     ]
 
 redundant_ftrs = [c for c in summary.index if 'code' in c and c not in useful_code_ftrs]
@@ -277,7 +281,7 @@ data_in2.tail(1).T
 
 
 #%% md #
-#It seems like duplicates are sales with id_parcelle
+#It seems like duplicates are sales with id_parcelle ad num disposition
 #and valeur_fonciere when they are same more than once 
 
 
@@ -297,34 +301,43 @@ nuni_ue = (data_in.loc[data_in.id_parcelle.isin(nuni_ue_mutations_parcels.values
           )
 nuni_ue.tail(4).T
 
+
+
 #%% 
 
 # Drop duplicate properties
 id_ftrs = ['id_parcelle'
-           #, 'id_mutation', 'date_mutation', 'numero_disposition', 'nature_mutation'
            , 'valeur_fonciere'
            ]
 data_unique = data_in2.drop_duplicates(subset=id_ftrs, keep='last')
 
-print(data.shape)
 
+#%% 
+data_unique.type_local.value_counts()
 
 #%% 
 
 # Select only Sell operations
 
-data = data_unique.loc[data_unique.nature_mutation == 'Vente',:]
+data = data_unique.loc[  (data_unique.nature_mutation == 'Vente')
+                       &  (data_unique.type_local.isin(['Appartement', 'Maison']))
+                       ,:]
 data.shape
+
+
 
 #%% 
 # Update usable ftrs categories Nature mutation will be a not usable ftrs
 cat_ftrs.remove('nature_mutation')
 ftrs.remove('nature_mutation')
 unuseful_ftrs.append('nature_mutation')
+cat_ftrs.remove('nom_commune')
+ftrs.remove('nom_commune')
+unuseful_ftrs.append('nom_commune')
 
 
-
-
+#%%
+ftrs
 #%%md 
 ### Explore Target Feature
 ###### First Plotting target_value in thousands to facilitate visualization
@@ -349,6 +362,17 @@ plt.show()
 #Applying log transformations gives a very centered distribution, There is, however a small separated group of very low valuew  which can, maybe be inspected to see if they are outliers.
 
 
+#%%
+data.numero_disposition
+#%%
+# Now plot log of skewed ftrs
+
+for f in ['valeur_fonciere', 'surface_reelle_bati', 'surface_terrain']:
+    df_plot = data.sample(10000, random_state=SEED)    
+    fig, ax = plt.subplots(figsize=(12,8))
+    sns.histplot(np.log1p(df_plot[f].values), ax=ax,  kde=True)
+    plt.show()
+
 
 
 #%%
@@ -363,10 +387,10 @@ fig, ax = plt.subplots(figsize=(12,8))
 sns.histplot(np.log1p(df_plot.valeur_fonciere_log.values), ax=ax,  kde=True)
 plt.show()
 
-#%% md # Potentian outlier vals are sell values under 90 and are approx 1% of data
+#%% md
+#Potentian outlier vals are sell values under 90 and are approx 1% of data
 
 #%%
-
 
 outlier_thr =  np.expm1(4.5)
 print('Outlier threshold:', outlier_thr)
@@ -487,10 +511,40 @@ summary_out = explore(data_in.loc[data.index,:], method="summarize")
 
 summary_out
 
+#%% m3
+#All nature culture and surface_terrain must be the same, otherwise a zero surface_terrain will be set
+
+#%%
+
+ #Select missing on one while not on other4
+terrain_with_missing_idx = data.loc[ ~data.surface_terrain.isnull() & data.nature_culture.isnull()  
+                                | data.surface_terrain.isnull() & ~data.nature_culture.isnull()
+                                ,:].index
+terrain_with_missing_idx
+
+data2 = data.loc[~data.index.isin(terrain_with_missing_idx),:]
+
+data2[['surface_terrain']] =  data2[['surface_terrain']].fillna(0) #Fill unasigned surface_terrain with 0
+data2[['nature_culture']] =  data2.nature_culture.cat.add_categories('aucune').fillna('aucune')
+data2.info()
+
+
+#%%
+#Drop null postal code lines
+
+data3 = data2.dropna(subset=['longitude', 'latitude'])
+data3.info()
+
+#%%
+# Sekect features to out for model
+ftrs_to_drop = ['date_mutation', 'id_parcelle', 'nombre_lots' , 'numero_disposition']
+ftrs_out = list(set(ftrs).symmetric_difference(set(ftrs_to_drop))) + [target]
+ftrs_out
+
 #%%
 # Add column with Boolean of usable or not ftr
 
-summary['use_ftr'] = [True if f in ftrs else False for f in summary.index]
+summary['use_ftr'] = [True if f in ftrs_out   else False for f in summary.index]
 summary.loc[ftrs,smmry4]
 
 summary['use_ftr']
@@ -499,7 +553,7 @@ summary
 #%%
 
 summary.to_csv('../../data/interim/features_to_use_summary.csv', index = True) # Out summary to be used on modelassertion to know which ftrs to use
-summary.shape
+summary.sort_values(by=['use_ftr'])
 #%% md
 ### Export Filtered Row Data Set
 
@@ -508,13 +562,14 @@ summary.shape
 
 #%% 
 
-data['code_postal'] = data.loc[:,'code_postal'].astype('object')
-data.info()
+data3['code_postal'] = data.loc[:,'code_postal'].astype('object')
+data3.dropna(subset = ['valeur_fonciere'])
+data3.info()
 
 #%% 
-data.tail(1).T
+data3.tail(1).T
 print(data.shape)
-data_out = data.loc[:,ftrs + [target]].dropna(subset=[target])
+data_out = data3.loc[:,ftrs + [target]].dropna(subset=[target]).dropna()
 data_out.to_csv('../../data/interim/raw_useful_ftrs.csv', index = False) 
 data_out.shape
 
