@@ -1,0 +1,9 @@
+stages:
+  train_model:
+    cmd:ml_pipeline-for-deploymen.py
+    deps:
+	- data/interim/raw_useful_ftrs.csv
+	- data/interim/features_to_use_summary.csv
+	outs:	
+	- data/ui/input_data_sample.csv
+	
