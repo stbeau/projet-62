@@ -442,7 +442,7 @@ axes = plt.gca()
 llim = np.min(performances-np.min((stds*4)))
 ulim = np.max(performances+np.max((stds*4)))
 axes.set_ylim([llim,ulim])
-plt.title("Models Performance Comparaison")
+plt.title("Compare Models Performance")
 plt.savefig('../reports/figures/mdl_performance.png')
 
 
