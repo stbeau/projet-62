@@ -19,6 +19,6 @@ jobs:
           python src/ml_pipeline-for-deployment.py
 
           # Write your CML report
-		  eccho "## Validating lates Model Base Model"
+		  echo "### Validating lates Model Base Model"
 		  cmd-publish repots/figures/mdl_performance.png --md >> mdl_performance.md
 		  cml-send-comment report.md
