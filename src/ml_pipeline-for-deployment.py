@@ -283,7 +283,7 @@ models = [
           #, ('sk_xgb', ensemble.GradientBoostingClassifier(random_state=FIX_RAND_STATE))
           #, ('xgb', xgboost.XGBClassifier(random_state=FIX_RAND_STATE))
            #('catgb'. CatBoostRegressor())
-          #, ('lgbmr', LGBMRegressor())
+          , ('lgbmr', LGBMRegressor())
           ]
 
 modelsDic = dict(models)
@@ -311,7 +311,7 @@ model_params = {
               #, 'xgb__objective': ['binary:logistic']
               #, 'xgb__gamma':[1]
               #, 'xgb__n_estimators': [1000]
-              # ,'lgbmr__n_estimators':[100] #, 'log2', 'auto'    
+               ,'lgbmr__n_estimators':[100] #, 'log2', 'auto'    
         }
 
 
@@ -434,16 +434,17 @@ fig, ax = plt.subplots(figsize=(12,8))
 #ax = plt.figure().gca()
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 models_summary_pd.T.loc['mean_test_score',:].plot(kind='bar'
-                       , yerr=models_summary_pd.T.loc['std_test_score',:].values
+                       , yerr=models_summary_pd.T.loc['std_test_score',:].values *3
                        , alpha = 0.3, error_kw=dict(ecolor='k'))
 
 #ax = plt.errorbar(range(len(mdls)), np.expm1(performances), xerr=0., yerr=stds, color='blue', fmt='o')
 axes = plt.gca()
-min_lim = np.min(mean_test_score-3)
-axes.set_ylim([0.7,0.8])
-plt.title("Models Performance")
+llim = np.min(performances-np.min((stds*4)))
+ulim = np.max(performances+np.max((stds*4)))
+axes.set_ylim([llim,ulim])
+plt.title("Models Performance Comparaison")
+plt.savefig('../reports/figures/mdl_performance.png')
 
-performances-stds
 
 #%%
 from joblib import dump, load
