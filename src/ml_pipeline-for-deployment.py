@@ -447,13 +447,13 @@ llim = np.min(performances-np.min((stds*4)))
 ulim = np.max(performances+np.max((stds*4)))
 axes.set_ylim([llim,ulim])
 plt.title("Compare Models Performance")
-
+plt.savefig('../src/visualization/mdl_performance.png')
 
 #%%
 # Write out metrics to be tracked
 best_model_cv_summary = scores[best_model]['cv_optim_result'].drop(['params'])
 best_model_cv_summary.to_json('metrics/best_model_cv_summary.json', orient='columns')
-plt.savefig('../reports/figures/mdl_performance.png')
+
 
 #%%
 #%%
