@@ -492,7 +492,8 @@ plt.show()
 
     
 #%%
-pred_mtx = eda_numcat(data, x=None, y=None, method="pps")
+# Explore features predicgtive capacity vs target. Note This is slow cause makes a RF for every ftrvs the target
+#pred_mtx = eda_numcat(data, x=None, y='valeur_fonciere', method="pps")
 #%%
 #pred_mtx #This is only displayed in the notebook not in script execution
 
@@ -570,7 +571,7 @@ data3.info()
 data3.tail(1).T
 print(data.shape)
 data_out = data3.loc[:,ftrs + [target]].dropna(subset=[target]).dropna()
-data_out.to_csv('../../data/interim/    _ftrs.csv', index = False) 
+data_out.to_csv('../../data/interim/raw_useful_ftrs', index = False) 
 data_out.shape
 
 
