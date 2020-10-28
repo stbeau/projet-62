@@ -287,7 +287,7 @@ models = [
            ('ridge', linear_model.Ridge( random_state=FIX_RAND_STATE))
           , ('lasso', linear_model.Ridge( random_state=FIX_RAND_STATE))           
           #, ('knn',  KNeighborsRegressor())                                     
-          #,('tree', DecisionTreeRegressor( random_state=FIX_RAND_STATE))
+          ,('tree', DecisionTreeRegressor( random_state=FIX_RAND_STATE))
           # ,('rf', RandomForestRegressor( random_state=FIX_RAND_STATE )) #random_state=FIX_RAND_STATE
           #, ('sk_xgb', ensemble.GradientBoostingClassifier(random_state=FIX_RAND_STATE))
           #, ('xgb', xgboost.XGBClassifier(random_state=FIX_RAND_STATE))
@@ -302,7 +302,7 @@ model_params = {
               #   'knn__n_neighbors': [5]
                'ridge__alpha': [1] #.001,.01, .1, 1, 10, 100, 1000, 10000, 100000
               , 'lasso__alpha': [1] #.001,.01, .1, 1, 10, 100, 1000, 10000, 100000
-              #, 'tree__max_features':['sqrt']
+              , 'tree__max_features':['sqrt']
               #,  'lasso__penalty':['l2'] #'l1',
               #, 'svm__C': [1] #.001,.01, .1, 1, 10, 100, 1000, 10000, 100000
               #, 'svm__kernel':  ['linear', 'rbf']
