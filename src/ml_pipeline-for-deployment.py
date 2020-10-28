@@ -43,8 +43,10 @@ import joblib
 
 # to visualise al the columns in the dataframe
 pd.pandas.set_option('display.max_columns', None)
-# -
 
+import pathlib
+# -
+import os
 # ### Setting the seed
 #
 #
@@ -63,8 +65,15 @@ SEED = 123
 # We need the training data to train our model in the production environment. 
 
 # load dataset
-ROOT = "../"
-data_in = pd.read_csv(ROOT +'/data/interim/raw_useful_ftrs.csv')
+
+
+#print(os.getcwd())
+#data_in = pd.read_csv(os.path.join(ROOT, 'data', 'interim', 'raw_useful_ftrs.csv'))
+
+
+file_path = ('data/interim/raw_useful_ftrs.csv')
+data_in = pd.read_csv(file_path)
+
 data = data_in.dropna()
 print(data.shape)
 data.head()
@@ -78,7 +87,7 @@ data.info()
 
 #%%
 # load dataset tags on features to use
-features_csv= pd.read_csv(ROOT + '/data/interim/features_to_use_summary.csv', index_col=0)
+features_csv= pd.read_csv('data/interim/features_to_use_summary.csv', index_col=0)
 print(features_csv.shape)
 
 features_csv[['use_ftr']].sort_values(by=['use_ftr'], ascending=False).head(10)
@@ -94,41 +103,41 @@ data2.info()
 #%%
 
 # load External data 
-big_cities = pd.read_csv(ROOT +'/data/external/france_big_cities.csv', sep = ';')
-big_cities.head()
+#big_cities = pd.read_csv('data/external/france_big_cities.csv', sep = ';')
+#big_cities.head()
 
 #%%
 ## add columns with radians for latitude and longitude
-import sklearn
-
-cities_radians = data2.loc[:,['latitude', 'longitude']].apply(np.radians)
-big_cities_radians = big_cities.apply({'latitude':np.radians, 'longitude':np.radians})
-big_cities_radians.tail()
-
-
-dist = sklearn.neighbors.DistanceMetric.get_metric('haversine')
-
-
-# for i,r in data2.head(2).iterrows():
-#     ith = pd.DataFrame((cities_radians.loc[i, ['latitude','longitude']].values.reshape(1,-1))
-#                        , index = [0], columns =['latitude','longitude'])
-
-#     distances = np.ravel(dist.pairwise(ith, big_cities[['latitude','longitude']]))* 6371
-
-#     closest_dist = distances[np.argmin(distances)]
-#     farest_dist =  distances[np.argmax(distances)]
-    
-#     closest_name = big_cities.city[np.argsort(distances)[0]]
-#     farest_name = big_cities.city[np.argsort(distances)[::-1][0]]
-#     print(distances)
-#     print(closest_name, closest_dist, farest_name, farest_dist )
-#     #data2['close_big_city_dist'] = clostes
-    
-dist_matrix = pd.DataFrame(dist.pairwise
-    (cities_radians[['latitude','longitude']],
-     big_cities_radians[['latitude','longitude']])*6371 # 6371 kms is average radius of the earth
-    ,index=cities_radians.index, columns = big_cities.city
-)
+#import sklearn
+#
+#cities_radians = data2.loc[:,['latitude', 'longitude']].apply(np.radians)
+#big_cities_radians = big_cities.apply({'latitude':np.radians, 'longitude':np.radians})
+#big_cities_radians.tail()
+#
+#
+#dist = sklearn.neighbors.DistanceMetric.get_metric('haversine')
+#
+#
+## for i,r in data2.head(2).iterrows():
+##     ith = pd.DataFrame((cities_radians.loc[i, ['latitude','longitude']].values.reshape(1,-1))
+##                        , index = [0], columns =['latitude','longitude'])
+#
+##     distances = np.ravel(dist.pairwise(ith, big_cities[['latitude','longitude']]))* 6371
+#
+##     closest_dist = distances[np.argmin(distances)]
+##     farest_dist =  distances[np.argmax(distances)]
+#    
+##     closest_name = big_cities.city[np.argsort(distances)[0]]
+##     farest_name = big_cities.city[np.argsort(distances)[::-1][0]]
+##     print(distances)
+##     print(closest_name, closest_dist, farest_name, farest_dist )
+##     #data2['close_big_city_dist'] = clostes
+#    
+#dist_matrix = pd.DataFrame(dist.pairwise
+#    (cities_radians[['latitude','longitude']],
+#     big_cities_radians[['latitude','longitude']])*6371 # 6371 kms is average radius of the earth
+#    ,index=cities_radians.index, columns = big_cities.city
+#)
 
 
 
@@ -447,20 +456,20 @@ llim = np.min(performances-np.min((stds*4)))
 ulim = np.max(performances+np.max((stds*4)))
 axes.set_ylim([llim,ulim])
 plt.title("Compare Models Performance")
-plt.savefig('../src/visualization/mdl_performance.png')
+plt.savefig('src/visualization/mdl_performance.png')
 
 #%%
 # Write out metrics to be tracked
 best_model_cv_summary = scores[best_model]['cv_optim_result'].drop(['params'])
-best_model_cv_summary.to_json('metrics/best_model_cv_summary.json', orient='columns')
+best_model_cv_summary.to_json('src/metrics/best_model_cv_summary.json', orient='columns')
 
 
 #%%
 #%%
 from joblib import dump, load
 
-dump(scores[best_model][ 'best_estimator'], ROOT + '/models/model.joblib') 
-clf3 = load(ROOT + 'models/model.joblib') 
+dump(scores[best_model][ 'best_estimator'], 'models/model.joblib') 
+clf3 = load('models/model.joblib') 
 new_vals = X_test[0:2]
 new_preds = np.expm1(clf3.predict(new_vals))
 print(new_preds)
@@ -471,6 +480,6 @@ y_test[0:2]
 
 #%%
 
-X_test.tail(1).to_csv(ROOT + '/data/ui/input_data_sample.csv', index=False)
+X_test.tail(1).to_csv('data/ui/input_data_sample.csv', index=False)
 
 X_test.tail(1)
