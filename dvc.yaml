@@ -1,0 +1,12 @@
+stages:
+  train:
+    cmd: src/ml_pipeline-for-deploymen.py
+    deps:
+    - data/interim/raw_useful_ftrs.csv
+    - data/interim/features_to_use_summary.csv
+    outs:	
+    - src/data/input_data_sample.csv
+    - src/visualization/mdl_performance.png
+    metrics:
+    - "src/metrics/metrics.json":
+        cache: false

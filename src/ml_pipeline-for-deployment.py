@@ -407,19 +407,23 @@ performance = np.sqrt(mean_squared_error(y_test, y_pred))
 print('Base model performance: {:.2f}'.format(performance))
 
 #%%
-scores[best_model]['cv_optim_result']
+
 summary_ftrs_subset = ['mean_fit_time', 'std_fit_time', 'mean_test_score', 'std_test_score']
 
 models_summary_pd = pd.DataFrame(None, columns = [f for f in scores[best_model]['cv_optim_result'].index if f in summary_ftrs_subset]
                        , index = scores.keys())
-print(models_summary_pd)
-scores[model]['cv_optim_result'][summary_ftrs_subset].values
+
+
 
 for model in scores.keys():
     print(scores[model]['cv_optim_result'][summary_ftrs_subset].values)
     models_summary_pd.loc[model] =  scores[model]['cv_optim_result'][summary_ftrs_subset]
     
 models_summary_pd
+
+#%% md
+#### Drawand Store Metrics
+
 #%%
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
@@ -442,10 +446,16 @@ axes = plt.gca()
 llim = np.min(performances-np.min((stds*4)))
 ulim = np.max(performances+np.max((stds*4)))
 axes.set_ylim([llim,ulim])
-plt.title("Models Performance Comparaison")
-plt.savefig('../reports/figures/mdl_performance.png')
+plt.title("Compare Models Performance")
+plt.savefig('../src/visualization/mdl_performance.png')
+
+#%%
+# Write out metrics to be tracked
+best_model_cv_summary = scores[best_model]['cv_optim_result'].drop(['params'])
+best_model_cv_summary.to_json('metrics/best_model_cv_summary.json', orient='columns')
 
 
+#%%
 #%%
 from joblib import dump, load
 
