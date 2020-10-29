@@ -8,5 +8,5 @@ stages:
     outs:
     - src/visualization/mdl_performance.png
     metrics:
-    - "src/metrics/metrics.json":
+    - src/metrics/best_model_cv_summary.json:
         cache: false
