@@ -5,9 +5,8 @@ stages:
     - data/interim/raw_useful_ftrs.csv
     - data/interim/features_to_use_summary.csv
 
-    outs:	
-    - data/ui/input_data_sample.csv
+    outs:
     - src/visualization/mdl_performance.png
     metrics:
-    - "src/metrics/metrics.json":
+    - src/metrics/best_model_cv_summary.json:
         cache: false
