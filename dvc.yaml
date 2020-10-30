@@ -2,12 +2,11 @@ stages:
   train:
     cmd: python src/ml_pipeline-for-deployment.py
     deps:
-    - data/interim/raw_useful_ftrs.csv
-    - data/interim/features_to_use_summary.csv
-
+    - src/data/raw_useful_ftrs.csv
+    - src/data/features_to_use_summary.csv
     outs:	
-    - data/ui/input_data_sample.csv
+    - src/data/input_data_sample.csv
     - src/visualization/mdl_performance.png
     metrics:
-    - "src/metrics/metrics.json":
+    - src/metrics/best_model_cv_summary.json:
         cache: false

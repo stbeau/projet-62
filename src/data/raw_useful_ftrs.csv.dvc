@@ -1,0 +1,3 @@
+outs:
+- md5: 0005410fe9fafe1b08de839bfac751ab
+  path: raw_useful_ftrs.csv
