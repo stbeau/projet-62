@@ -480,6 +480,9 @@ y_test[0:2]
 
 #%%
 
-X_test.tail(1).to_csv('data/ui/input_data_sample.csv', index=False)
+X_test.tail(1).to_csv('src/data/input_data_sample.csv', index=False)
 
 X_test.tail(1)
+
+#%%
+X_test.tail(3).T

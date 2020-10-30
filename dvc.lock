@@ -1,0 +1,14 @@
+train:
+  cmd: python src/ml_pipeline-for-deployment.py
+  deps:
+  - path: src/data/features_to_use_summary.csv
+    md5: 6f3a9871aa02c13549971a1291a37695
+  - path: src/data/raw_useful_ftrs.csv
+    md5: 0005410fe9fafe1b08de839bfac751ab
+  outs:
+  - path: src/data/input_data_sample.csv
+    md5: d61222336a1dd9acfab562c57ffdcb67
+  - path: src/metrics/best_model_cv_summary.json
+    md5: 3dcf63eaf82aef4012544473c6b265a6
+  - path: src/visualization/mdl_performance.png
+    md5: fd771a4aadfef595f00c4ff0960460db

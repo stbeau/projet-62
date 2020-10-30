@@ -10,15 +10,14 @@ jobs:
         env:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-
           # Your ML workflow goes here
-		  pip install -r src/requirements.txt
-		  dvc repro
-		  git fetch --prune     #Update list of branches
-		  dvc metrics diff --show-md master > report.md
-          python src/ml_pipeline-for-deployment.py
+          pip install -r src/requirements.txt
+        dvc repro
+        git fetch --prune     #Update list of branches
+        dvc metrics diff --show-md master > report.md
+        python src/ml_pipeline-for-deployment.py
 
           # Write your CML report
-		  echo "### Validating lates Model Base Model"
-		  cmd-publish repots/figures/mdl_performance.png --md >> mdl_performance.md
-		  cml-send-comment report.md
+          echo "### Validating lates Model Base Model"
+          cmd-publish repots/figures/mdl_performance.png --md >> mdl_performance.md
+          cml-send-comment report.md
