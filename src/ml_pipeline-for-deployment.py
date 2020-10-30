@@ -71,7 +71,7 @@ SEED = 123
 #data_in = pd.read_csv(os.path.join(ROOT, 'data', 'interim', 'raw_useful_ftrs.csv'))
 
 
-file_path = ('data/interim/raw_useful_ftrs.csv')
+file_path = ('src/data/raw_useful_ftrs.csv')
 data_in = pd.read_csv(file_path)
 
 data = data_in.dropna()
@@ -87,7 +87,7 @@ data.info()
 
 #%%
 # load dataset tags on features to use
-features_csv= pd.read_csv('data/interim/features_to_use_summary.csv', index_col=0)
+features_csv= pd.read_csv('src/data/features_to_use_summary.csv', index_col=0)
 print(features_csv.shape)
 
 features_csv[['use_ftr']].sort_values(by=['use_ftr'], ascending=False).head(10)
