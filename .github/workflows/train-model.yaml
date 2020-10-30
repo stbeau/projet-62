@@ -13,7 +13,7 @@ jobs:
           # Your ML workflow goes here
           pip install -r src/requirements.txt
           
-          dvc repro --pull
+          dvc repro --dry
           
             git fetch --prune     #Update list of branches
           dvc metrics diff --show-md master > report.md
